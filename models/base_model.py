@@ -52,5 +52,5 @@ class BaseModel:
         """
         self.__dict__["__class__"] = __class__.__name__
         self.created_at = self.created_at.isoformat()
-        self.updated_at = self.updated_at.isformat()
+        self.updated_at = self.updated_at.isoformat()
         return self.__dict__

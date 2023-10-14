@@ -1,44 +1,44 @@
 #!/usr/bin/env python3
 """
-test_base_model module: A unittest subclass for testing base_model module
+test_file_storage module: A unittest subclass for testing file_storage module
 
 All your tests should be executed by using this command:
 (python3 -m unittest discover tests)
 or
-(python3 -m unittest tests/test_models/test_base_model.py)
+(python3 -m unittest tests/test_models/test_file_storage.py)
 """
 
-from models.base_model import BaseModel
+from models.engine import file_storage
 import inspect
 import unittest
 
 
-class TestBaseModel(unittest.TestCase):
+class Testfile_storage(unittest.TestCase):
     """
-    Testbase_model: (class) - unittest subclass to run test cases on base_model
+    Testfile_storage: (class) - unittest subclass to run test cases
+    on file_storage
     """
     @classmethod
     def setUp(cls):
         """
         setUp: (class method) - method for sharing resources across all methods
 
-        setup: assigned with a list of all the functions in BaseModel
+        setup: assigned with a list of all the functions in FileStorage
         """
-        cls.setup = inspect.getmembers(base_model.BaseModel,
+        cls.setup = inspect.getmembers(file_storage.FileStorage,
                                        inspect.isfunction)
-        self.obj = BaseModel()
 
     def test_module_docs(self):
         """
         test for module docstring
         """
-        self.assertTrue(len(base_model.__doc__) >= 1)
+        self.assertTrue(len(file_storage.__doc__) >= 1)
 
     def test_class_docs(self):
         """
         test for class docstring
         """
-        self.assertTrue(len(base_model.BaseModel.__doc__) >= 1)
+        self.assertTrue(len(file_storage.FileStorage.__doc__) >= 1)
 
     def test_function_docs(self):
         """
