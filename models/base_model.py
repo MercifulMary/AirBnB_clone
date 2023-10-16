@@ -1,85 +1,71 @@
-#!/usr/bin/env python3
-"""
-base_model module: contains a class `BaseModel` that defines all common
-attributes/methods for other classes
+#!/usr/bin/python3
+"""This is the base model for the project"""
 
-You can also test file by file by using this command:
-python3 -m unittest tests/test_models/test_base_model.py
-"""
-
+import uuid
 from datetime import datetime
-from uuid import uuid4
-import models
+from models import storage
 
 
 class BaseModel:
+    """Base class for other classes, providing common functionality.
+
+    Attributes:
+        id (str): A unique identifier for the instance.
+        created_at (datetime): The date and time the instance was created.
+        updated_at (datetime): The date and time the instance was last updated.
     """
-    BaseModel class: defines all common attributes/methods for other classes
 
-    Methods:
-        __init__: instantialization
-
-        __str__: return an informal string representation of an instance
-
-        save: updates the public instance attribute `updated_at` with
-        the current datetime
-
-        to_dict: returns a dictionary containing all keys/values of
-        __dict__ of the instance
-    """
     def __init__(self, *args, **kwargs):
-        """
-        Initialize a BaseModel instance
+        """Initialize a new instance of the BaseModel.
 
         Args:
-            id: (string) - assign with an uuid when an instance is created
-
-            created_at: (datetime) - assign with the current datetime
-            when an instance is created
-
-            updated_at: (datetime) - assign with the current datetime when an
-            instance is created and it will be updated every time you change
-            your object
+            *args: Variable-length positional arguments
+            (not used in this implementation).
+            **kwargs: Variable-length keyword arguments that
+            can be used to initialize instance attributes.
         """
-        if kwargs:
-            for key, value in kwargs.items():
-                if key == "__class__":
-                    continue
-                if key == "created_at" or key == "updated_at":
-                    value = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
-                setattr(self, key, value)
+        if kwargs is not None and kwargs != {}:
+            for key in kwargs:
+                if key == "created_at":
+                    self.__dict__["created_at"] = datetime.strptime(
+                        kwargs["created_at"], "%Y-%m-%dT%H:%M:%S.%f")
+                elif key == "updated_at":
+                    self.__dict__["updated_at"] = datetime.strptime(
+                        kwargs["updated_at"], "%Y-%m-%dT%H:%M:%S.%f")
+                else:
+                    self.__dict__[key] = kwargs[key]
         else:
-            self.id = str(uuid4())
+            self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
             self.updated_at = datetime.now()
-            models.storage.new(self)
+            storage.new(self)
 
     def __str__(self):
-        """
-        return an informal string representation of an instance
+        """Return a string representation of the instance.
 
-        Return:
-            str: string representation of BaseModel atttributes
+        Returns:
+            str: A string containing the class name, id,
+            and instance attributes.
         """
-        return f"[{__class__.__name__}] ({self.id}) {self.__dict__}"
+        class_name = type(self).__name__
+        attributes = ', '.join([f'{key}={value}' for
+                                key, value in self.__dict__.items()])
+        return f"[{class_name}] ({self.id}) {attributes}"
 
     def save(self):
-        """
-        updates the public instance attribute `updated_at` with
-        the current datetime
-        """
+        """Update the 'updated_at' attribute to the current datetime."""
         self.updated_at = datetime.now()
-        models.storage.save()
+        storage.save()
 
     def to_dict(self):
-        """
-        returns a dictionary containing all keys/values of
-        __dict__ of the instance
+        """Return a dictionary representation of the instance.
 
-        Return:
-            dict: dictionary containing the attributes of BaseModel
+        Returns:
+            dict: A dictionary containing instance attributes and metadata.
         """
-        self.__dict__["__class__"] = __class__.__name__
-        self.created_at = self.created_at.isoformat()
-        self.updated_at = self.updated_at.isoformat()
-        return self.__dict__
+        class_name = type(self).__name__
+        obj_dict = self.__dict__.copy()
+        obj_dict['created_at'] = self.created_at.isoformat()
+        obj_dict['updated_at'] = self.updated_at.isoformat()
+        obj_dict['__class__'] = class_name
+        return obj_dict
